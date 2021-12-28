@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+      "target": "es2021",
+      "rootDirs": [
+        "tests",
+        "src"
+      ],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "outDir": "dist",
+      "strict": true,
+      "esModuleInterop": true,
+      "experimentalDecorators": true, // required for Decorators
+      "emitDecoratorMetadata": true, // required for Decorators
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true,
+      "strictPropertyInitialization": false,
+      "baseUrl": ".",
+      "paths": {
+        "*": [
+          "node_modules/*",
+          "tests/*",
+        ]
+      }
+    },
+    "include": [
+      "src/**/*.ts",
+      ".env",
+      ".env.*",
+      "tests/**/*.ts",
+      "index.js",
+      "jest.config.js",
+      "config/*.config.js" // for *.config.js files
+    ],
+    "exclude": [
+      "node_modules",
+    ]
+  }
+  
+  
+  
