@@ -1,31 +1,34 @@
-import 'reflect-metadata';
-import { InversifyExpressServer } from 'inversify-express-utils';
-import * as bodyParser from 'body-parser';
-import * as helmet from 'helmet';
 
-// load all injectable entities.
-// the @provide() annotation will then automatically register them.
-import './ioc/loader';
-import { Container } from 'inversify';
-import { PlayerService } from './services/player';
-import TYPES from './constants/type'; 
-import customErrorHandler from './middlewares/custom-error-handler';
+import * as http from 'http';
+import { AddressInfo } from 'net';
+import server from './server';
+import logger from './utils/logger';
 
-// load everything needed to the Container
-let container = new Container();
- container.bind<PlayerService>(TYPES.PlayerService).to(PlayerService);
-// start the server
-let server = new InversifyExpressServer(container);
+const PORT = process.env.PORT || 3000;
+const server1 = http.createServer(server.instance);
 
-server.setConfig((app) => {
-  app.use(bodyParser.urlencoded({
-    extended: true
-  }));
-  app.use(bodyParser.json());
+function serverError(error: NodeJS.ErrnoException): void {
+  if (error.syscall !== 'listen') {
+      throw error;
+  }
+  // handle specific error codes here.
+  throw error;
+}
+
+function serverListening(): void {
+  const addressInfo: AddressInfo = <AddressInfo>server1.address();
+  logger.info(`Listening on ${addressInfo.address}:${PORT}`);
+}
+
+server1.on('error', serverError);
+server1.on('listening', serverListening);
+
+server1.listen(PORT, () => {
+  console.log(`Server is listening on :${PORT}`);
 });
 
-let serverInstance = server.build();
-serverInstance.listen(3000);
-serverInstance.use(customErrorHandler);
-
-console.log('Server started on port 3000 :)');
+process.on('unhandledRejection', (reason: Error) => {
+  logger.error('Unhandled Promise Rejection: reason:', reason.message);
+  logger.error(reason.stack);
+  // application specific logging, throwing an error, or other logic here
+});
